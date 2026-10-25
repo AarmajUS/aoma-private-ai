@@ -28,8 +28,10 @@ python3 -m http.server 8000
 
 ## Verification (2026-10-25)
 
-Headless Chromium (SwiftShader WebGPU) at iPhone size (390×844): engine load + streamed answer to a live question verified end-to-end; see git history / program notes for the run log. Real-device check on an iPhone (Safari 26 WebGPU) is the one pass that can't be done from the build machine — flagged, not hidden.
+- **End-to-end inference: PASS.** Headless Chromium (SwiftShader WebGPU) at iPhone size (390×844): engine loaded, greeting rendered, and a live question received a real streamed on-device answer; zero page errors, no horizontal overflow.
+- The build sandbox's browser cannot open outbound tunnels to the model hosts, so the inference pass ran against a **byte-identical local mirror** of the exact upstream model files (same shards, same model-lib wasm, downloaded from the canonical URLs above). The production page uses the upstream URLs directly; each was separately verified reachable (HTTP 200/206) at build time.
+- Still open (flagged, not hidden): a real-device pass on an iPhone (Safari 26 WebGPU) — the one check that can't be done from the build machine.
 
 ## Deploy
 
-Static hosting (Vercel project connected to this repo). Planned live home: Aoma Free Tools Desk (aomaai.com) — final URL recorded here once live.
+Static hosting via GitHub Pages from this repo. **Live: https://aarmajus.github.io/aoma-private-ai/** (a custom aomaai.com tools-desk URL can point here later).

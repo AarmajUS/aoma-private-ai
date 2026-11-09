@@ -60,7 +60,7 @@
   <p class="sub">An AI chat that runs <b>100% on your own device</b>. After a one-time model download, nothing you type is sent to any server — not to us, not to anyone. Close the tab and the conversation is gone.</p>
 
   <div class="card">
-    <button id="start">Start the AI (one-time download ~800 MB)</button>
+    <button id="start">Start the AI (one-time download ~210 MB)</button>
     <div class="prog" id="prog"><div class="bar"><i id="bar"></i></div><div class="pstat" id="pstat">Preparing…</div></div>
     <div class="warn" id="warn"></div>
 
@@ -88,7 +88,7 @@
   </div>
 
   <footer>
-    Engine: <a href="https://github.com/mlc-ai/web-llm" target="_blank" rel="noopener">WebLLM</a> (Apache-2.0, MLC project). Model: Llama 3.2 (Meta) — Built with Llama.<br>
+    Engine: <a href="https://github.com/mlc-ai/web-llm" target="_blank" rel="noopener">WebLLM</a> (Apache-2.0, MLC project). Model: SmolLM2 360M (Hugging Face), Apache-2.0.<br>
     Aoma's layer: the assistant's business coaching prompt, the interface, and the privacy-first design. © AARMAJ LLC · Aoma AI Agency · (609) 745-1580
   </footer>
 </div>
@@ -99,7 +99,7 @@ import * as webllm from './vendor/webllm/index.js';
 const $=id=>document.getElementById(id);
 const start=$('start'), prog=$('prog'), bar=$('bar'), pstat=$('pstat'), warn=$('warn'),
       chat=$('chat'), msgs=$('msgs'), inp=$('inp'), send=$('send');
-const MODEL='Llama-3.2-1B-Instruct-q4f16_1-MLC';
+const MODEL='SmolLM2-360M-Instruct-q4f16_1-MLC';
 const SYSTEM=`You are the Aoma Private AI assistant, running fully on the user's own device. You help small business owners with practical marketing and day-to-day business questions: reviews, follow-ups, social posts, customer messages, simple planning. Answer in plain, friendly language. Be concise — short paragraphs or short lists. Never invent prices, statistics or facts about a specific real business. You are OFFLINE: you have no internet access and no live information, so you cannot check today's news, weather, prices, scores or anything current — if asked, say so plainly in one line (you run privately on their device and your knowledge ends at your training date), then offer something you CAN do. If asked what you are, say you are a compact AI model running privately on their device, provided by Aoma AI Agency as a free demo.`;
 
 let engine=null, history=[{role:'system',content:SYSTEM}], busy=false;
@@ -129,7 +129,7 @@ start.addEventListener('click', async ()=>{
     inp.focus();
   }catch(e){
     prog.style.display='none'; start.disabled=false; window.__orbHold=false;
-    showWarn('The AI couldn\'t start on this device/browser. On a phone, close other tabs and apps first, then try again with this tab kept on screen. A one-time ~800 MB download is required and WebGPU must be available — a recent Chrome/Edge, or Safari on iOS 26+, works best. Details: '+(e&&e.message?String(e.message).slice(0,160):'unknown error'));
+    showWarn('The AI couldn\'t start on this device/browser. On a phone, close other tabs and apps first, then try again with this tab kept on screen. A one-time ~210 MB download is required and WebGPU must be available — a recent Chrome/Edge, or Safari on iOS 26+, works best. Details: '+(e&&e.message?String(e.message).slice(0,160):'unknown error'));
   }
 });
 
@@ -141,7 +141,7 @@ async function ask(text){
   const bubble=addMsg('assistant','…');
   let full='';
   try{
-    const stream=await engine.chat.completions.create({messages:history, stream:true, temperature:0.7, max_tokens:400});
+    const stream=await engine.chat.completions.create({messages:history, stream:true, temperature:0.7, max_tokens:256});
     for await(const chunk of stream){
       const delta=chunk.choices?.[0]?.delta?.content||'';
       if(delta){ full+=delta; bubble.textContent=full; msgs.scrollTop=msgs.scrollHeight; }
